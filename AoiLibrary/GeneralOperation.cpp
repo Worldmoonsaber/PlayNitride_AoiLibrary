@@ -1,6 +1,12 @@
-
-
 #include "AoiLibrary.h"
+#include <opencv2/core/types.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
+#include <iostream>
+#include <format>
+#include <opencv2/photo.hpp>
+using namespace std;
+using namespace cv;
 
 
 
@@ -80,18 +86,18 @@ int findBoundary(Mat creteriaIMG, Rect inirect, char direction)
 		break;
 
 	default:
-		std::cout << "****** Error case mode ******" << endl;
+		std::cout << "****** Error case mode ******" << std::endl;
 		break;
 
 	}
 
 
-	std::cout << "finish findboundary~" << endl;
+	std::cout << "finish findboundary~" << std::endl;
 	std::cout << "fi";
 	return BoundaryVal;
 }
 
-std::tuple<Rect, Point>FindMaxInnerRect(Mat src, Mat colorSRC, sizeTD_ target, Point TDcenter)
+std::tuple<Rect, Point>FindMaxInnerRect(Mat src, Mat colorSRC, sizeTD target, Point TDcenter)
 {
 	//output:::
 	Rect innerboundary;
@@ -260,6 +266,21 @@ std::tuple<Rect, Point>FindMaxInnerRect(Mat src, Mat colorSRC, sizeTD_ target, P
 
 }
 
+void RegionPartition(Mat ImgBinary, vector<BlobInfo>& result)
+{
+	result = RegionPartitionTopology(ImgBinary);
+}
+
+BlobInfo* BlobPartition(Mat ImgBinary)
+{
+	vector<BlobInfo> result = RegionPartitionTopology(ImgBinary);
+
+	BlobInfo* ptr;
+	ptr = new BlobInfo[result.size()];
+	memcpy((void*) ptr, (void*)&result[0],result.size());
+	return ptr;
+}
+
 Mat RotatecorrectImg(double Rtheta, Mat src)
 {
 	Point2f center((src.cols - 1) / 2.0, (src.rows - 1) / 2.0);
@@ -288,7 +309,7 @@ Mat RotatecorrectImg(double Rtheta, Mat src)
 	return patchrotaIMG;
 }
 
-void funcThreshold(Mat ImgInput, Mat& ImgThres, thresP_ thresParm, ImgP_ imageParm, sizeTD_ target)
+void funcThreshold(Mat ImgInput, Mat& ImgThres, thresP thresParm, ImgP imageParm, sizeTD target)
 {
 	ImgThres = Mat::zeros(ImgInput.rows, ImgInput.cols, CV_8UC1);
 	//Thres parameters:::
@@ -462,3 +483,170 @@ void funcRotatePoint(vector<Point> vPt, vector<Point>& vPtOut,Mat& marksize,floa
 	Rotmarkpic.release();
 	Rotnew.release();
 }
+
+
+Mat ContrastEnhancement(Mat srcimg, float alpha, float beta)
+{
+	vector <Mat> channelsImg;
+	vector <Mat> Mergeunit;
+
+	Mat dstIMG = Mat::zeros(srcimg.size(), srcimg.type());
+
+	split(srcimg, channelsImg);
+
+	for (int p = 0; p < channelsImg.size(); p++)
+	{
+		Mat unitImg = Mat::zeros(srcimg.size(), CV_8UC1);
+		unitImg = channelsImg.at(p);
+		Mat apresIMG = Mat::zeros(srcimg.size(), CV_8UC1);
+
+		for (int row = 0; row < srcimg.rows; row++)
+		{
+			for (int col = 0; col < srcimg.cols; col++)
+			{
+				float pxl = unitImg.at<uchar>(row, col);
+				apresIMG.at<uchar>(row, col) = saturate_cast<uchar>(pxl * alpha + beta);
+			}
+		}
+		Mergeunit.push_back(apresIMG);
+	}
+
+	merge(Mergeunit, dstIMG);
+
+	return dstIMG;
+}
+
+
+
+std::tuple<Mat, Mat, Mat>Histplotting(Mat src, int hist_w, int hist_h, int histsize)
+{
+	int imgnumber = 1;
+	int imgdimension = 1;
+	//int histsize = 256;
+	float grayrange[2] = { 0,256 };
+	imgdimension = 1;
+	/*int hist_w = 256;
+	int hist_h = 300;*/
+	int bin_w = hist_w / histsize;
+	Mat histplot(hist_h, hist_w, CV_8UC3, Scalar(0, 0, 0));
+	const float* grayhistrange = { grayrange };
+	Mat histImg;
+	vector<int> nonzerolist;
+	vector<int> slopelist;
+	Mat maskthres, histmsk, histmskplot;
+	Point maxLocgau, maxLoc;
+	Mat threslow2;
+	//cv::calcHist(&sobelbitor, 1, 0, cv::Mat(), histImg, imgdimension, &histsize, &grayhistrange, true, false);
+	cv::calcHist(&src, 1, 0, cv::Mat(), histImg, imgdimension, &histsize, &grayhistrange, true, false);
+
+	histImg.copyTo(histmskplot);
+	cv::normalize(histmskplot, histmskplot, 0, hist_h, NORM_MINMAX, -1, Mat());
+
+
+	//Mat sorthistmak = std::sort(histmskplot.begin(), histmskplot.end());
+
+
+	for (int i = 1; i < histsize; i++)
+	{
+		cv::line(histplot, Point((i - 1) * bin_w, hist_h - cvRound(histmskplot.at<float>(i - 1))),
+			Point(i * bin_w, hist_h - -cvRound(histmskplot.at<float>(i))), Scalar(255, 0, 0), 2, 8, 0);
+	}
+
+	return{ histImg,histmskplot,histplot };
+}
+
+void gammaCorrection(const Mat& src, Mat& dst, const float gamma)
+{
+	float invGamma = 1 / gamma;
+
+	Mat table(1, 256, CV_8U);
+	uchar* p = table.ptr();
+	for (int i = 0; i < 256; ++i) {
+		p[i] = (uchar)(pow(i / 255.0, invGamma) * 255);
+	}
+
+	LUT(src, table, dst);
+}
+
+Mat KmeanOP(int knum, Mat src)
+{
+	TermCriteria criteria;
+	Mat labels, centeres;
+	Mat pixelVal, segmentedIMG;
+
+	//define stopping criteria
+	criteria = TermCriteria(cv::TermCriteria::EPS + TermCriteria::MAX_ITER, 100, 0.2);
+	int attempts = 10;
+	int KmeanFlag = cv::KMEANS_RANDOM_CENTERS;
+
+
+
+	Mat samples(src.rows * src.cols, src.channels(), CV_32F); //change to float
+
+	Mat clonesample;
+
+
+	for (int y = 0; y < src.rows; y++)
+	{
+		for (int x = 0; x < src.cols; x++)
+		{
+			for (int z = 0; z < src.channels(); z++)
+			{
+				if (src.channels() == 3)
+				{
+					samples.at<float>(y + x * src.rows, z) = src.at<Vec3b>(y, x)[z];
+				}
+
+				else
+				{
+					samples.at<float>(y + x * src.rows, z) = src.at<uchar>(y, x); //for gray img
+				}
+
+			}
+		}
+	}
+
+
+
+	cv::kmeans(samples, knum, labels, criteria, attempts, KmeanFlag, centeres);
+
+	Mat NewIMG(src.size(), src.type()); //CV8U3
+
+	for (int y = 0; y < src.rows; y++)
+	{
+		for (int x = 0; x < src.cols; x++)
+		{
+			int cluster_idx = labels.at<int>(y + x * src.rows, 0);
+			if (src.channels() == 3)
+			{
+				for (int z = 0; z < src.channels(); z++) //3 channels
+				{
+					NewIMG.at<Vec3b>(y, x)[z] = (centeres.at<float>(cluster_idx, z)); //CV32F
+
+
+				}
+			}
+			else
+			{
+				NewIMG.at<uchar>(y, x) = centeres.at<float>(cluster_idx, 0); //for gray img
+			}
+
+
+		}
+	}
+
+
+
+	//std::cout << "finish Kop" << endl;
+
+	return NewIMG;
+}
+
+std::tuple<int, Point_<int>> FindMF_pixel(Mat histImg)
+{
+	double minVal, maxVal; //maxVal: frequency
+	Point minLoc, maxLoc; //maxLoc.y: pixel value
+	minMaxLoc(histImg, &minVal, &maxVal, &minLoc, &maxLoc);
+	return { maxVal,maxLoc };
+}
+

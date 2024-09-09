@@ -15,39 +15,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
-      <Filter>標頭檔</Filter>
-    </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>標頭檔</Filter>
-    </ClInclude>
+    <ClCompile Include="ConsoleCallDllTestApplication.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="AoiLibrary.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
-    <ClInclude Include="OpenCV_Extension_Tool.h">
-      <Filter>標頭檔</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>標頭檔</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="dllmain.cpp">
-      <Filter>來源檔案</Filter>
-    </ClCompile>
-    <ClCompile Include="pch.cpp">
-      <Filter>來源檔案</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneralOperation.cpp">
-      <Filter>來源檔案</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenCV_Extension_Tool.cpp">
-      <Filter>來源檔案</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="AoiLibrary.rc">
-      <Filter>資源檔</Filter>
-    </ResourceCompile>
   </ItemGroup>
 </Project>

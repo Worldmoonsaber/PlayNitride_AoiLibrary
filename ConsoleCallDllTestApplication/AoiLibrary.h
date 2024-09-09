@@ -1,5 +1,9 @@
-#pragma once
-#include "OpenCV_Extension_Tool.h"
+//#pragma once
+
+using namespace cv;
+using namespace std;
+
+#pragma comment(lib,"AOILib_Common.lib") 
 
 #pragma region ¸ê®Æµ²ºc
 
@@ -79,7 +83,7 @@ _declspec(dllexport) Mat KmeanOP(int knum, Mat src);
 
 #pragma endregion
 
-_declspec(dllexport) void funcRotatePoint(vector<Point> vPt, vector<Point>& vPtOut, Mat& marksize, float correctTheta, Point IMGoffset);
+_declspec(dllexport) void funcRotatePoint(std::vector<Point> vPt, std::vector<Point>& vPtOut, Mat& marksize, float correctTheta, Point IMGoffset);
 
 _declspec(dllexport) Mat RotatecorrectImg(double Rtheta, Mat src);
 

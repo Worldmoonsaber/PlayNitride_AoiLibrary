@@ -1,5 +1,9 @@
-#pragma once
-#include "OpenCV_Extension_Tool.h"
+//#pragma once
+
+using namespace cv;
+using namespace std;
+
+#pragma comment(lib,"AOILib_Common.lib") 
 
 #pragma region 資料結構
 
@@ -52,8 +56,6 @@ _declspec(dllexport) class BlobInfo;
 
 _declspec(dllexport) void RegionPartition(Mat ImgBinary, vector<BlobInfo>& result);
 
-_declspec(dllexport) BlobInfo* BlobPartition(Mat ImgBinary);
-
 #pragma endregion
 
 #pragma region 影像切割與尋找邊緣
@@ -79,7 +81,7 @@ _declspec(dllexport) Mat KmeanOP(int knum, Mat src);
 
 #pragma endregion
 
-_declspec(dllexport) void funcRotatePoint(vector<Point> vPt, vector<Point>& vPtOut, Mat& marksize, float correctTheta, Point IMGoffset);
+_declspec(dllexport) void funcRotatePoint(std::vector<Point> vPt, std::vector<Point>& vPtOut, Mat& marksize, float correctTheta, Point IMGoffset);
 
 _declspec(dllexport) Mat RotatecorrectImg(double Rtheta, Mat src);
 
