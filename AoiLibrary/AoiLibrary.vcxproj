@@ -74,7 +74,7 @@
     <IncludePath>C:\opencv\build\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\opencv\build\x64\vc15\lib;$(LibraryPath)</LibraryPath>
     <TargetName>AOILib_Common</TargetName>
-    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>..\x64</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
