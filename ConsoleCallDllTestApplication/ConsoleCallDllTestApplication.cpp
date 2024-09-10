@@ -44,16 +44,7 @@ int main()
 
 
     funcThreshold(rawimg,ImgThres,thresParm,imageParm,target);
-
-    BlobInfo* lstPtr;
-
-   // vector<BlobInfo> lst;
-
-    lstPtr=BlobPartition(ImgThres);
-
     vector<BlobInfo> result = RegionPartitionTopology(ImgThres);
-
- //   memcpy((void*)&result[0], (void*)&lstPtr, result.size());
 
     return 0;
 }

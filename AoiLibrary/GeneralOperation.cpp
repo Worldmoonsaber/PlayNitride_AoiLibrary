@@ -256,20 +256,6 @@ std::tuple<Rect, Point>FindMaxInnerRect(Mat src, Mat colorSRC, sizeTD target, Po
 
 }
 
-void RegionPartition(Mat ImgBinary, vector<BlobInfo>& result)
-{
-	result = RegionPartitionTopology(ImgBinary);
-}
-
-BlobInfo* BlobPartition(Mat ImgBinary)
-{
-	vector<BlobInfo> result = RegionPartitionTopology(ImgBinary);
-
-	BlobInfo* ptr;
-	ptr = new BlobInfo[result.size()];
-	memcpy((void*) ptr, (void*)&result[0],result.size());
-	return ptr;
-}
 
 Mat RotatecorrectImg(double Rtheta, Mat src)
 {
@@ -636,4 +622,65 @@ std::tuple<int, Point_<int>> FindMF_pixel(Mat histImg)
 	minMaxLoc(histImg, &minVal, &maxVal, &minLoc, &maxLoc);
 	return { maxVal,maxLoc };
 }
+
+
+void funcCreateKmeanThresImg(thresP thresParm, Mat cropedRImg, Mat& thresImgOut)
+{
+	Mat gauBGR, EnHBGR;
+	cv::cvtColor(cropedRImg, cropedRImg, cv::COLOR_BGR2GRAY);
+	cropedRImg.convertTo(cropedRImg, -1, 1.2, 0);
+	cv::GaussianBlur(cropedRImg, gauBGR, Size(0, 0), 13);
+	cv::addWeighted(cropedRImg, 1.5, gauBGR, -0.7, 0.0, EnHBGR); //(1.5, -0.7)
+
+	Mat Kop;
+
+	if (thresParm.thresmode == 3)
+	{
+		Kop = KmeanOP(2, EnHBGR);
+		double minVal, maxVal; //maxVal: frequency
+		Point minLoc, maxLoc; //maxLoc.y: pixel value
+		minMaxLoc(Kop, &minVal, &maxVal, &minLoc, &maxLoc);
+		//std::cout << "calculate min Loc is:: " << minLoc.y << " / " << maxLoc.y << " / " << minVal << " / " << maxVal << endl;
+		threshold(Kop, thresImgOut, minVal + 1, 255, THRESH_BINARY_INV);
+		cv::medianBlur(thresImgOut, thresImgOut, 5);
+	}
+
+	else if (thresParm.thresmode == 4)
+	{
+		Kop = KmeanOP(2, EnHBGR);
+		double minVal, maxVal; //maxVal: frequency
+		Point minLoc, maxLoc; //maxLoc.y: pixel value
+		minMaxLoc(Kop, &minVal, &maxVal, &minLoc, &maxLoc);
+		threshold(Kop, thresImgOut, maxVal - 1, 255, THRESH_BINARY);
+		cv::medianBlur(thresImgOut, thresImgOut, 5);
+	}
+	else if (thresParm.thresmode == 0)
+	{
+		Mat drakfiled, brightfield;
+		Kop = KmeanOP(3, EnHBGR);
+		double minVal, maxVal; //maxVal: frequency
+		Point minLoc, maxLoc; //maxLoc.y: pixel value
+		minMaxLoc(Kop, &minVal, &maxVal, &minLoc, &maxLoc);
+		threshold(Kop, brightfield, maxVal - 1, 255, THRESH_BINARY);
+		cv::medianBlur(brightfield, thresImgOut, 5);
+
+		drakfiled.release();
+		brightfield.release();
+	}
+	else
+	{
+		Kop = KmeanOP(2, EnHBGR);
+		double minVal, maxVal; //maxVal: frequency
+		Point minLoc, maxLoc; //maxLoc.y: pixel value
+		minMaxLoc(Kop, &minVal, &maxVal, &minLoc, &maxLoc);
+		threshold(Kop, thresImgOut, minVal + 1, 255, THRESH_BINARY_INV);
+		cv::medianBlur(thresImgOut, thresImgOut, 5);
+	}
+
+	Kop.release();
+	gauBGR.release();
+	EnHBGR.release();
+	cropedRImg.release();
+}
+
 

@@ -3,6 +3,7 @@
 
 
 
+
 #pragma region BlobInfo клеє
 BlobInfo::BlobInfo(vector<Point> vArea, vector<Point> vContour)
 {

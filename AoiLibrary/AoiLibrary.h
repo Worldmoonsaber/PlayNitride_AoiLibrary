@@ -55,10 +55,6 @@ typedef struct
 
 class BlobInfo;
 
-_declspec(dllexport) void RegionPartition(Mat ImgBinary, vector<BlobInfo>& result);
-
-_declspec(dllexport) BlobInfo* BlobPartition(Mat ImgBinary);
-
 _declspec(dllexport) vector<BlobInfo> RegionPartitionTopology(Mat ImgBinary);
 
 #pragma endregion
@@ -84,6 +80,8 @@ _declspec(dllexport) void gammaCorrection(const Mat& src, Mat& dst, const float 
 
 _declspec(dllexport) Mat KmeanOP(int knum, Mat src);
 
+_declspec(dllexport) void funcCreateKmeanThresImg(thresP thresParm, Mat cropedRImg, Mat& thresImgOut);
+
 #pragma endregion
 
 _declspec(dllexport) void funcRotatePoint(vector<Point> vPt, vector<Point>& vPtOut, Mat& marksize, float correctTheta, Point IMGoffset);
@@ -96,6 +94,8 @@ _declspec(dllexport) std::tuple<int, Point_<int>> FindMF_pixel(Mat histImg);
 
 _declspec(dllexport) std::tuple<Mat, Mat, Mat>Histplotting(Mat src, int hist_w, int hist_h, int histsize);
 
+
+#pragma region 一定要放在這裡 呼叫dll時才不會出錯 還在研究有沒有比較好的方法
 
 class BlobInfo
 {
@@ -215,3 +215,6 @@ private:
     vector<vector<Point>> _contourHollow{};
 
 };
+
+#pragma endregion
+
