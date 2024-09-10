@@ -1,14 +1,4 @@
 #include "AoiLibrary.h"
-#include <opencv2/core/types.hpp>
-#include <opencv2/core.hpp>
-#include <opencv2/imgproc.hpp>
-#include <iostream>
-#include <format>
-#include <opencv2/photo.hpp>
-using namespace std;
-using namespace cv;
-
-
 
 Point find_piccenter(Mat src) {
 	int piccenterx = int(src.size().width * 0.5);
@@ -484,7 +474,6 @@ void funcRotatePoint(vector<Point> vPt, vector<Point>& vPtOut,Mat& marksize,floa
 	Rotnew.release();
 }
 
-
 Mat ContrastEnhancement(Mat srcimg, float alpha, float beta)
 {
 	vector <Mat> channelsImg;
@@ -515,8 +504,6 @@ Mat ContrastEnhancement(Mat srcimg, float alpha, float beta)
 
 	return dstIMG;
 }
-
-
 
 std::tuple<Mat, Mat, Mat>Histplotting(Mat src, int hist_w, int hist_h, int histsize)
 {

@@ -51,7 +51,7 @@ int main()
 
     lstPtr=BlobPartition(ImgThres);
 
-    vector<BlobInfo> result;
+    vector<BlobInfo> result = RegionPartitionTopology(ImgThres);
 
  //   memcpy((void*)&result[0], (void*)&lstPtr, result.size());
 

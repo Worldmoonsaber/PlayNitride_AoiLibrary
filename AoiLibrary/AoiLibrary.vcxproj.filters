@@ -24,9 +24,6 @@
     <ClInclude Include="AoiLibrary.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
-    <ClInclude Include="OpenCV_Extension_Tool.h">
-      <Filter>標頭檔</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>標頭檔</Filter>
     </ClInclude>

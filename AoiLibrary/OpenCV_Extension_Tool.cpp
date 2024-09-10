@@ -1,5 +1,7 @@
+#include "AoiLibrary.h"
 
-#include "OpenCV_Extension_Tool.h"
+
+
 
 #pragma region BlobInfo клеє
 BlobInfo::BlobInfo(vector<Point> vArea, vector<Point> vContour)
