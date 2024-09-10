@@ -709,3 +709,22 @@ vector<BlobInfo> RegionPartitionTopology(Mat ImgBinary)
 	return vRes;
 }
 
+vector<BlobInfo> RegionPartition(Mat ImgBinary, int maxArea, int minArea)
+{
+	vector<BlobInfo> lst = RegionPartitionTopology(ImgBinary);
+	vector<BlobInfo> lstOut;
+
+	for (int i = 0; i < lst.size(); i++)
+	{
+		if (lst[i].Area() > maxArea)
+			continue;
+
+		if (lst[i].Area() < minArea)
+			continue;
+
+		lstOut.push_back(lst[i]);
+	}
+
+
+	return lstOut;
+}

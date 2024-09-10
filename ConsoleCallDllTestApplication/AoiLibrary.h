@@ -59,6 +59,8 @@ class BlobInfo;
 
 _declspec(dllexport) vector<BlobInfo> RegionPartitionTopology(Mat ImgBinary);
 
+_declspec(dllexport) vector<BlobInfo> RegionPartition(Mat ImgBinary, int maxArea, int minArea);
+
 #pragma endregion
 
 #pragma region 影像切割與尋找邊緣
