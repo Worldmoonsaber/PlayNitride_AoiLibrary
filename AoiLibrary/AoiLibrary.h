@@ -99,7 +99,7 @@ _declspec(dllexport) std::tuple<Mat, Mat, Mat>Histplotting(Mat src, int hist_w, 
 
 #pragma region 一定要放在這裡 呼叫dll時才不會出錯 還在研究有沒有比較好的方法
 
-class BlobInfo
+_declspec(dllexport) class BlobInfo
 {
 public:
     BlobInfo(vector<Point> vArea, vector<Point> vContour);
@@ -108,82 +108,82 @@ public:
     BlobInfo(vector<Point> vContour);
     BlobInfo(vector<Point> vMainContour, vector<vector<Point>> vHollowContour);
 
-    void CaculateBlob(vector<Point> vArea, vector<Point> vContour);
-    void Release();
-    int Area();
+    _declspec(dllexport) void CaculateBlob(vector<Point> vArea, vector<Point> vContour);
+    _declspec(dllexport) void Release();
+    _declspec(dllexport) int Area();
 
     /// <summary>
     ///  1 ~ 0.0   1:完美圓形
     /// </summary>
     /// <returns></returns>
-    float Circularity();
-    Point2f Center();
+    _declspec(dllexport) float Circularity();
+    _declspec(dllexport) Point2f Center();
     /// <summary>
     ///  1 ~ 0.0   1:完美矩形
     /// </summary>
     /// <returns></returns>
-    float Rectangularity();
-    float minRectHeight();
-    float minRectWidth();
-    float Angle();
+    _declspec(dllexport) float Rectangularity();
+    _declspec(dllexport) float minRectHeight();
+    _declspec(dllexport) float minRectWidth();
+    _declspec(dllexport) float Angle();
     /// <summary>
     /// 長寬比
     /// </summary>
     /// <returns></returns>
-    float AspectRatio();
-    vector<Point> Points();
-    vector<Point> contour();
+    _declspec(dllexport) float AspectRatio();
+    _declspec(dllexport) vector<Point> Points();
+    _declspec(dllexport) vector<Point> contour();
 
     /// <summary>
     /// 長軸長度
     /// </summary>
     /// <returns></returns>
-    float Ra();
+    _declspec(dllexport) float Ra();
 
     /// <summary>
     /// 短軸長度
     /// </summary>
     /// <returns></returns>
-    float Rb();
+    _declspec(dllexport) float Rb();
 
-    int Xmin();
-    int Ymin();
-    int Xmax();
-    int Ymax();
-    int Width();
-    int Height();
+    _declspec(dllexport) int Xmin();
+    _declspec(dllexport) int Ymin();
+    _declspec(dllexport) int Xmax();
+    _declspec(dllexport) int Ymax();
+    _declspec(dllexport) int Width();
+    _declspec(dllexport) int Height();
     /// <summary>
     /// 蓬鬆度
     /// </summary>
     /// <returns></returns>
-    float Bulkiness();
+    _declspec(dllexport) float Bulkiness();
 
     /// <summary>
     /// 緊緻度
     /// </summary>
     /// <returns></returns>
-    float Compactness();
+    _declspec(dllexport) float Compactness();
 
     /// <summary>
     /// 與 Circularity 有定義上的差別 這個屬性更適合偵測 中空圓環的圓環 圓環的 Roundness趨近於1 Circularity 0.1 左右
     /// </summary>
     /// <returns></returns>
-    float Roundness();
+    _declspec(dllexport) float Roundness();
 
-    float Sides();
+    _declspec(dllexport) float Sides();
 
-
-    /// <summary>
-    /// Topology 才有用的屬性
-    /// </summary>
-    /// <returns></returns>
-    vector<vector<Point>> contourHollow();
 
     /// <summary>
     /// Topology 才有用的屬性
     /// </summary>
     /// <returns></returns>
-    vector<Point> contourMain();
+    _declspec(dllexport) vector<vector<Point>> contourHollow();
+
+    /// <summary>
+    /// Topology 才有用的屬性
+    /// </summary>
+    /// <returns></returns>
+    _declspec(dllexport) vector<Point> contourMain();
 
 private:
 
@@ -217,6 +217,7 @@ private:
     vector<vector<Point>> _contourHollow{};
 
 };
+
 
 #pragma endregion
 
