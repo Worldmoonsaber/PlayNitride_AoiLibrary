@@ -781,15 +781,13 @@ vector<tuple<Point, float>> MatchPattern(Mat Img, Mat MatchPattern, int div_x, i
 
 
 		Point offset = Point(vCropMatch[i].size().width / 2 - 1, vCropMatch[i].size().height / 2 - 1);
-		Mat tmpImg = Img.clone();
+		//Mat tmpImg = Img.clone();
 
 		for (int j = 0; j < vRegion.size(); j++)
 		{
 			Point pt = Point(vRegion[j].Center()) + offset;
-			result[i].insert(result[i].begin(), pt);
-
-			drawMarker(tmpImg, pt, Scalar(255, 0, 0), 1, 50, 3);
-
+			//result[i].insert(result[i].begin(), pt);
+			//drawMarker(tmpImg, pt, Scalar(255, 0, 0), 1, 50, 3);
 		}
 
 		dst.release();
