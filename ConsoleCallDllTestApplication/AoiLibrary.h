@@ -99,6 +99,10 @@ _declspec(dllexport) std::tuple<int, Point_<int>> FindMF_pixel(Mat histImg);
 _declspec(dllexport) std::tuple<Mat, Mat, Mat>Histplotting(Mat src, int hist_w, int hist_h, int histsize);
 
 
+_declspec(dllexport) string LibVersion() ;
+
+
+
 #pragma region 一定要放在這裡 呼叫dll時才不會出錯 還在研究有沒有比較好的方法
 
 _declspec(dllexport) class BlobInfo

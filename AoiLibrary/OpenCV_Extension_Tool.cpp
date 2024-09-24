@@ -5,16 +5,16 @@
 
 
 #pragma region BlobInfo 物件
-BlobInfo::BlobInfo(vector<Point> vArea, vector<Point> vContour)
+PlayNitrideAOI::BlobInfo::BlobInfo(vector<Point> vArea, vector<Point> vContour)
 {
 	CaculateBlob(vArea, vContour);
 }
 
-BlobInfo::BlobInfo()
+PlayNitrideAOI::BlobInfo::BlobInfo()
 {
 }
 
-BlobInfo::BlobInfo(Mat ImgRegion)
+PlayNitrideAOI::BlobInfo::BlobInfo(Mat ImgRegion)
 {
 	vector<vector<Point>> vContourArr;
 	findContours(ImgRegion, vContourArr, RETR_LIST, CHAIN_APPROX_NONE);
@@ -30,7 +30,7 @@ BlobInfo::BlobInfo(Mat ImgRegion)
 	ImgRegion.release();
 }
 
-BlobInfo::BlobInfo(vector<Point> vContour)
+PlayNitrideAOI::BlobInfo::BlobInfo(vector<Point> vContour)
 {
 	_contourMain = vContour;
 	_contourHollow.clear();
@@ -169,7 +169,7 @@ BlobInfo::BlobInfo(vector<Point> vContour)
 
 }
 
-BlobInfo::BlobInfo(vector<Point> vMainContour, vector<vector<Point>> vHollowContour)
+PlayNitrideAOI::BlobInfo::BlobInfo(vector<Point> vMainContour, vector<vector<Point>> vHollowContour)
 {
 	_contourMain = vMainContour;
 	_contourHollow = vHollowContour;
@@ -312,7 +312,7 @@ BlobInfo::BlobInfo(vector<Point> vMainContour, vector<vector<Point>> vHollowCont
 
 }
 
-void BlobInfo::CaculateBlob(vector<Point> vArea, vector<Point> vContour)
+void PlayNitrideAOI::BlobInfo::CaculateBlob(vector<Point> vArea, vector<Point> vContour)
 {
 	_contour = vContour;
 	_points = vArea;
@@ -447,7 +447,7 @@ void BlobInfo::CaculateBlob(vector<Point> vArea, vector<Point> vContour)
 	// Moments openCV已經存在實作 沒有必要加入此類特徵 有需要在呼叫即可
 }
 
-void BlobInfo::Release()
+void PlayNitrideAOI::BlobInfo::Release()
 {
 	_contour.clear();
 	_points.clear();
@@ -470,52 +470,52 @@ void BlobInfo::Release()
 	_sides = -1;
 }
 
-int BlobInfo::Area()
+int PlayNitrideAOI::BlobInfo::Area()
 {
 	return _area;
 }
 
-float BlobInfo::Circularity()
+float PlayNitrideAOI::BlobInfo::Circularity()
 {
 	return _circularity;
 }
 
-Point2f BlobInfo::Center()
+Point2f PlayNitrideAOI::BlobInfo::Center()
 {
 	return _center;
 }
 
-float BlobInfo::Rectangularity()
+float PlayNitrideAOI::BlobInfo::Rectangularity()
 {
 	return _rectangularity;
 }
 
-float BlobInfo::minRectHeight()
+float PlayNitrideAOI::BlobInfo::minRectHeight()
 {
 	return _minRectHeight;
 }
 
-float BlobInfo::minRectWidth()
+float PlayNitrideAOI::BlobInfo::minRectWidth()
 {
 	return _minRectWidth;
 }
 
-float BlobInfo::Angle()
+float PlayNitrideAOI::BlobInfo::Angle()
 {
 	return _Angle;
 }
 
-float BlobInfo::AspectRatio()
+float PlayNitrideAOI::BlobInfo::AspectRatio()
 {
 	return _AspectRatio;
 }
 
-vector<Point> BlobInfo::Points()
+vector<Point> PlayNitrideAOI::BlobInfo::Points()
 {
 	return _points;
 }
 
-vector<Point> BlobInfo::contour()
+vector<Point> PlayNitrideAOI::BlobInfo::contour()
 {
 	return _contour;
 }
@@ -524,7 +524,7 @@ vector<Point> BlobInfo::contour()
 /// 長軸
 /// </summary>
 /// <returns></returns>
-float BlobInfo::Ra()
+float PlayNitrideAOI::BlobInfo::Ra()
 {
 	return _Ra;
 }
@@ -533,74 +533,74 @@ float BlobInfo::Ra()
 /// 短軸
 /// </summary>
 /// <returns></returns>
-float BlobInfo::Rb()
+float PlayNitrideAOI::BlobInfo::Rb()
 {
 	return _Rb;
 }
 
-int BlobInfo::Xmin()
+int PlayNitrideAOI::BlobInfo::Xmin()
 {
 	return _XminBound;
 }
 
-int BlobInfo::Ymin()
+int PlayNitrideAOI::BlobInfo::Ymin()
 {
 	return _YminBound;
 }
 
-int BlobInfo::Xmax()
+int PlayNitrideAOI::BlobInfo::Xmax()
 {
 	return _XmaxBound;
 }
 
-int BlobInfo::Ymax()
+int PlayNitrideAOI::BlobInfo::Ymax()
 {
 	return _YmaxBound;
 }
 
-int BlobInfo::Width()
+int PlayNitrideAOI::BlobInfo::Width()
 {
 	return _Width;
 }
 
-int BlobInfo::Height()
+int PlayNitrideAOI::BlobInfo::Height()
 {
 	return _Height;
 }
 
-float BlobInfo::Bulkiness()
+float PlayNitrideAOI::BlobInfo::Bulkiness()
 {
 	return _bulkiness;
 }
 
-float BlobInfo::Compactness()
+float PlayNitrideAOI::BlobInfo::Compactness()
 {
 	return _compactness;
 }
 
-float BlobInfo::Roundness()
+float PlayNitrideAOI::BlobInfo::Roundness()
 {
 	return _roundness;
 }
 
-float BlobInfo::Sides()
+float PlayNitrideAOI::BlobInfo::Sides()
 {
 	return _sides;
 }
 
-vector<vector<Point>> BlobInfo::contourHollow()
+vector<vector<Point>> PlayNitrideAOI::BlobInfo::contourHollow()
 {
 	return _contourHollow;
 }
 
-vector<Point> BlobInfo::contourMain()
+vector<Point> PlayNitrideAOI::BlobInfo::contourMain()
 {
 	return _contourMain;
 }
 
 #pragma endregion
 
-void RegionPartitionTopologySubLayerAnalysis(int layer,int curIndex, vector<vector<Point>> vContour, vector<Vec4i> vhi,vector<BlobInfo>& lstBlob)
+void RegionPartitionTopologySubLayerAnalysis(int layer,int curIndex, vector<vector<Point>> vContour, vector<Vec4i> vhi,vector<PlayNitrideAOI::BlobInfo>& lstBlob)
 {
 	int type = layer % 2;
 	//--- 0 此層為Region
@@ -631,7 +631,7 @@ void RegionPartitionTopologySubLayerAnalysis(int layer,int curIndex, vector<vect
 			}
 		}
 
-		BlobInfo blob = BlobInfo(mainContour, vHollowContour);
+		PlayNitrideAOI::BlobInfo blob = PlayNitrideAOI::BlobInfo(mainContour, vHollowContour);
 		lstBlob.push_back(blob);
 
 		for (int i = 0; i < subIndx.size(); i++)
@@ -664,15 +664,9 @@ void RegionPartitionTopologySubLayerAnalysis(int layer,int curIndex, vector<vect
 	}
 }
 
-/// <summary>
-///  實測結果比較慢 (理論上應該要比較快) 待釐清
-/// </summary>
-/// <param name="ImgBinary"></param>
-/// <param name="filter"></param>
-/// <returns></returns>
-vector<BlobInfo> RegionPartitionTopology(Mat ImgBinary)
+vector<PlayNitrideAOI::BlobInfo> RegionPartitionTopology(Mat ImgBinary)
 {
-	vector<BlobInfo> vRes;
+	vector<PlayNitrideAOI::BlobInfo> vRes;
 	//https://blog.csdn.net/qinglingLS/article/details/106270095
 	// 準備用拓樸的方式重構方法
 
@@ -686,45 +680,206 @@ vector<BlobInfo> RegionPartitionTopology(Mat ImgBinary)
 	int layer = 0;
 	int i = 0;
 
-	while (true)
+	if (vhi.size() > 0)
 	{
-		if (vhi[i].val[2] == -1)
+		while (true)
 		{
-			//----沒有子階層
-			BlobInfo obj = BlobInfo(vContour[i]);
-			vRes.push_back(obj);
-		}
-		else
-		{
-			//----有階層 待扣除坑洞區域
-			RegionPartitionTopologySubLayerAnalysis(0, i, vContour, vhi, vRes);
-		}
+			if (vhi[i].val[2] == -1)
+			{
+				//----沒有子階層
+				PlayNitrideAOI::BlobInfo obj = PlayNitrideAOI::BlobInfo(vContour[i]);
+				vRes.push_back(obj);
+			}
+			else
+			{
+				//----有階層 待扣除坑洞區域
+				RegionPartitionTopologySubLayerAnalysis(0, i, vContour, vhi, vRes);
+			}
 
-		if (vhi[i].val[0] == -1)
-			break;
+			if (vhi[i].val[0] == -1)
+				break;
 
-		i = vhi[i].val[0];
+			i = vhi[i].val[0];
+		}
 	}
 
 	return vRes;
 }
 
-vector<BlobInfo> RegionPartition(Mat ImgBinary, int maxArea, int minArea)
+
+
+vector<tuple<Point, float>> MatchPattern(Mat Img, Mat MatchPattern, int div_x, int div_y, float Tolerance_score)
 {
-	vector<BlobInfo> lst = RegionPartitionTopology(ImgBinary);
-	vector<BlobInfo> lstOut;
+	int xPatternGrid = div_x;
+	int yPatternGrid = div_y;
+	float tolerance_Score = Tolerance_score;
 
-	for (int i = 0; i < lst.size(); i++)
+	if (xPatternGrid == 0)
+		xPatternGrid = 1;
+
+	if (yPatternGrid == 0)
+		yPatternGrid = 1;
+
+	vector<Point> vCropIndx;
+	vector<Mat> vCropMatch;
+	vector<Point> vCropCenter;
+
+	int subWidth = MatchPattern.size().width / xPatternGrid;
+	int subHeight = MatchPattern.size().height / yPatternGrid;
+
+	for (int x = 0; x < xPatternGrid; x++)
+		for (int y = 0; y < yPatternGrid; y++)
+		{
+			Mat croppedIMG;
+			Rect rectPart = Rect(x * subWidth, y * subHeight, subWidth, subHeight);
+
+			vCropIndx.push_back(Point(x, y));
+			vCropCenter.push_back(Point((x + 0.5) * subWidth, (y + 0.5) * subHeight));
+			MatchPattern(rectPart).copyTo(croppedIMG);
+			vCropMatch.push_back(croppedIMG);
+		}
+
+	const int resSz = xPatternGrid * yPatternGrid;
+
+	vector < vector<Point>> result;
+
+	for (int i = 0; i < resSz; i++)
+		result.push_back(vector<Point>());
+
+	for (int i = 0; i < resSz; i++)
 	{
-		if (lst[i].Area() > maxArea)
-			continue;
+		Mat imgMatched;
+		matchTemplate(Img, vCropMatch[i], imgMatched, TM_CCOEFF_NORMED);
 
-		if (lst[i].Area() < minArea)
-			continue;
+		Mat dst;
+		threshold(imgMatched, dst, tolerance_Score, 1, THRESH_BINARY);
 
-		lstOut.push_back(lst[i]);
+		Mat dstBinary = Mat::zeros(dst.size(), CV_8UC1);
+
+		//-----------------預期會有多點符合條件
+		for (int i = 0; i < dst.cols; ++i)
+			for (int j = 0; j < dst.rows; ++j)
+				if (dst.at<float>(j, i) != 0)
+				{
+					dstBinary.at<uchar>(j, i) = 255;
+				}
+
+		vector<PlayNitrideAOI::BlobInfo> vRegionTmp = RegionPartitionTopology(dstBinary);
+
+		//-----刪除 Noise 
+		float sum_Area = 0;
+
+		for (int i = 0; i < vRegionTmp.size(); i++)
+			sum_Area += vRegionTmp[i].Area();
+
+		float avg_area = sum_Area / vRegionTmp.size();
+		vector<PlayNitrideAOI::BlobInfo> vRegion;
+
+		for (int i = 0; i < vRegionTmp.size(); i++)
+			if (vRegionTmp[i].Area() > 0.5 * avg_area)
+				vRegion.push_back(vRegionTmp[i]);
+
+
+		Point offset = Point(vCropMatch[i].size().width / 2 - 1, vCropMatch[i].size().height / 2 - 1);
+		Mat tmpImg = Img.clone();
+
+		for (int j = 0; j < vRegion.size(); j++)
+		{
+			Point pt = Point(vRegion[j].Center()) + offset;
+			result[i].insert(result[i].begin(), pt);
+
+			drawMarker(tmpImg, pt, Scalar(255, 0, 0), 1, 50, 3);
+
+		}
+
+		dst.release();
+		imgMatched.release();
+		dstBinary.release();
 	}
 
+	vector<tuple<Point, float>> vMatchResult;
 
-	return lstOut;
+	if (result.size() == 1)
+	{
+		//----只有一個Template 無法計算角度
+		for (int i = 0; i < result[0].size(); i++)
+		{
+			vMatchResult.push_back(tuple<Point, float>(result[0][i], 0.0));
+		}
+	}
+	else
+	{
+		vector<vector<Point>> matchedComfirm;
+		//----一一比對
+		for (int i = 0; i < result[0].size(); i++)
+		{
+			vector<Point> vSet;
+			vSet.push_back(result[0][i]);//參考基準點一
+
+			Point ref_Pt = result[0][i];
+
+			for (int s = 1; s < result.size(); s++)
+			{
+				if (result[s].size() == 0)
+					break;
+
+				float x_diff_ref = vCropCenter[s].x - vCropCenter[0].x;
+				float y_diff_ref = vCropCenter[s].y - vCropCenter[0].y;
+
+				Point ptDiff = Point(x_diff_ref, y_diff_ref);
+
+				float ptDiffDist = norm(ptDiff);
+
+				std::sort(result[s].begin(), result[s].end(), [&, ref_Pt, x_diff_ref, y_diff_ref](Point& a, Point& b)
+					{
+						Point pointDist_A = a - ref_Pt;
+						Point pointDist_B = b - ref_Pt;
+
+						if (norm(pointDist_A) < norm(pointDist_B))
+						{
+							return true;
+						}
+						return false;
+					});
+
+				//判斷是否合理
+				Point pointDist = result[s][0] - ref_Pt;
+				float dist = norm(pointDist);
+
+				if (ptDiffDist * 1.1 < dist)
+				{
+					break;
+				}
+
+				//------待加入其他糾錯條件
+				vSet.push_back(result[s][0]);//參考基準點一
+				result[s].erase(result[s].begin());
+			}
+
+			if (vSet.size() == result.size() && vSet.size() > 1)
+			{
+				matchedComfirm.push_back(vSet);
+			}
+		}
+
+		for (int i = 0; i < matchedComfirm.size(); i++)
+		{
+			if (matchedComfirm[i].size() == 0)
+				continue;
+
+			RotatedRect minrect = minAreaRect(matchedComfirm[i]);
+			vMatchResult.push_back(tuple<Point, float>(minrect.center, minrect.angle));
+		}
+	}
+
+	vCropIndx.clear();
+	vCropCenter.clear();
+
+	for (int i = 0; i < vCropMatch.size(); i++)
+		vCropMatch[i].release();
+
+	vCropMatch.clear();
+
+	return vMatchResult;
+
 }
