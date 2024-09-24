@@ -5,16 +5,16 @@
 
 
 #pragma region BlobInfo 物件
-PlayNitrideAOI::BlobInfo::BlobInfo(vector<Point> vArea, vector<Point> vContour)
+BlobInfo::BlobInfo(vector<Point> vArea, vector<Point> vContour)
 {
 	CaculateBlob(vArea, vContour);
 }
 
-PlayNitrideAOI::BlobInfo::BlobInfo()
+BlobInfo::BlobInfo()
 {
 }
 
-PlayNitrideAOI::BlobInfo::BlobInfo(Mat ImgRegion)
+BlobInfo::BlobInfo(Mat ImgRegion)
 {
 	vector<vector<Point>> vContourArr;
 	findContours(ImgRegion, vContourArr, RETR_LIST, CHAIN_APPROX_NONE);
@@ -30,7 +30,7 @@ PlayNitrideAOI::BlobInfo::BlobInfo(Mat ImgRegion)
 	ImgRegion.release();
 }
 
-PlayNitrideAOI::BlobInfo::BlobInfo(vector<Point> vContour)
+BlobInfo::BlobInfo(vector<Point> vContour)
 {
 	_contourMain = vContour;
 	_contourHollow.clear();
@@ -169,7 +169,7 @@ PlayNitrideAOI::BlobInfo::BlobInfo(vector<Point> vContour)
 
 }
 
-PlayNitrideAOI::BlobInfo::BlobInfo(vector<Point> vMainContour, vector<vector<Point>> vHollowContour)
+BlobInfo::BlobInfo(vector<Point> vMainContour, vector<vector<Point>> vHollowContour)
 {
 	_contourMain = vMainContour;
 	_contourHollow = vHollowContour;
@@ -312,7 +312,7 @@ PlayNitrideAOI::BlobInfo::BlobInfo(vector<Point> vMainContour, vector<vector<Poi
 
 }
 
-void PlayNitrideAOI::BlobInfo::CaculateBlob(vector<Point> vArea, vector<Point> vContour)
+void BlobInfo::CaculateBlob(vector<Point> vArea, vector<Point> vContour)
 {
 	_contour = vContour;
 	_points = vArea;
@@ -447,7 +447,7 @@ void PlayNitrideAOI::BlobInfo::CaculateBlob(vector<Point> vArea, vector<Point> v
 	// Moments openCV已經存在實作 沒有必要加入此類特徵 有需要在呼叫即可
 }
 
-void PlayNitrideAOI::BlobInfo::Release()
+void BlobInfo::Release()
 {
 	_contour.clear();
 	_points.clear();
@@ -470,52 +470,52 @@ void PlayNitrideAOI::BlobInfo::Release()
 	_sides = -1;
 }
 
-int PlayNitrideAOI::BlobInfo::Area()
+int BlobInfo::Area()
 {
 	return _area;
 }
 
-float PlayNitrideAOI::BlobInfo::Circularity()
+float BlobInfo::Circularity()
 {
 	return _circularity;
 }
 
-Point2f PlayNitrideAOI::BlobInfo::Center()
+Point2f BlobInfo::Center()
 {
 	return _center;
 }
 
-float PlayNitrideAOI::BlobInfo::Rectangularity()
+float BlobInfo::Rectangularity()
 {
 	return _rectangularity;
 }
 
-float PlayNitrideAOI::BlobInfo::minRectHeight()
+float BlobInfo::minRectHeight()
 {
 	return _minRectHeight;
 }
 
-float PlayNitrideAOI::BlobInfo::minRectWidth()
+float BlobInfo::minRectWidth()
 {
 	return _minRectWidth;
 }
 
-float PlayNitrideAOI::BlobInfo::Angle()
+float BlobInfo::Angle()
 {
 	return _Angle;
 }
 
-float PlayNitrideAOI::BlobInfo::AspectRatio()
+float BlobInfo::AspectRatio()
 {
 	return _AspectRatio;
 }
 
-vector<Point> PlayNitrideAOI::BlobInfo::Points()
+vector<Point> BlobInfo::Points()
 {
 	return _points;
 }
 
-vector<Point> PlayNitrideAOI::BlobInfo::contour()
+vector<Point> BlobInfo::contour()
 {
 	return _contour;
 }
@@ -524,7 +524,7 @@ vector<Point> PlayNitrideAOI::BlobInfo::contour()
 /// 長軸
 /// </summary>
 /// <returns></returns>
-float PlayNitrideAOI::BlobInfo::Ra()
+float BlobInfo::Ra()
 {
 	return _Ra;
 }
@@ -533,74 +533,74 @@ float PlayNitrideAOI::BlobInfo::Ra()
 /// 短軸
 /// </summary>
 /// <returns></returns>
-float PlayNitrideAOI::BlobInfo::Rb()
+float BlobInfo::Rb()
 {
 	return _Rb;
 }
 
-int PlayNitrideAOI::BlobInfo::Xmin()
+int BlobInfo::Xmin()
 {
 	return _XminBound;
 }
 
-int PlayNitrideAOI::BlobInfo::Ymin()
+int BlobInfo::Ymin()
 {
 	return _YminBound;
 }
 
-int PlayNitrideAOI::BlobInfo::Xmax()
+int BlobInfo::Xmax()
 {
 	return _XmaxBound;
 }
 
-int PlayNitrideAOI::BlobInfo::Ymax()
+int BlobInfo::Ymax()
 {
 	return _YmaxBound;
 }
 
-int PlayNitrideAOI::BlobInfo::Width()
+int BlobInfo::Width()
 {
 	return _Width;
 }
 
-int PlayNitrideAOI::BlobInfo::Height()
+int BlobInfo::Height()
 {
 	return _Height;
 }
 
-float PlayNitrideAOI::BlobInfo::Bulkiness()
+float BlobInfo::Bulkiness()
 {
 	return _bulkiness;
 }
 
-float PlayNitrideAOI::BlobInfo::Compactness()
+float BlobInfo::Compactness()
 {
 	return _compactness;
 }
 
-float PlayNitrideAOI::BlobInfo::Roundness()
+float BlobInfo::Roundness()
 {
 	return _roundness;
 }
 
-float PlayNitrideAOI::BlobInfo::Sides()
+float BlobInfo::Sides()
 {
 	return _sides;
 }
 
-vector<vector<Point>> PlayNitrideAOI::BlobInfo::contourHollow()
+vector<vector<Point>> BlobInfo::contourHollow()
 {
 	return _contourHollow;
 }
 
-vector<Point> PlayNitrideAOI::BlobInfo::contourMain()
+vector<Point> BlobInfo::contourMain()
 {
 	return _contourMain;
 }
 
 #pragma endregion
 
-void RegionPartitionTopologySubLayerAnalysis(int layer,int curIndex, vector<vector<Point>> vContour, vector<Vec4i> vhi,vector<PlayNitrideAOI::BlobInfo>& lstBlob)
+void RegionPartitionTopologySubLayerAnalysis(int layer,int curIndex, vector<vector<Point>> vContour, vector<Vec4i> vhi,vector<BlobInfo>& lstBlob)
 {
 	int type = layer % 2;
 	//--- 0 此層為Region
@@ -631,7 +631,7 @@ void RegionPartitionTopologySubLayerAnalysis(int layer,int curIndex, vector<vect
 			}
 		}
 
-		PlayNitrideAOI::BlobInfo blob = PlayNitrideAOI::BlobInfo(mainContour, vHollowContour);
+		BlobInfo blob = BlobInfo(mainContour, vHollowContour);
 		lstBlob.push_back(blob);
 
 		for (int i = 0; i < subIndx.size(); i++)
@@ -664,9 +664,9 @@ void RegionPartitionTopologySubLayerAnalysis(int layer,int curIndex, vector<vect
 	}
 }
 
-vector<PlayNitrideAOI::BlobInfo> RegionPartitionTopology(Mat ImgBinary)
+vector<BlobInfo> RegionPartitionTopology(Mat ImgBinary)
 {
-	vector<PlayNitrideAOI::BlobInfo> vRes;
+	vector<BlobInfo> vRes;
 	//https://blog.csdn.net/qinglingLS/article/details/106270095
 	// 準備用拓樸的方式重構方法
 
@@ -687,7 +687,7 @@ vector<PlayNitrideAOI::BlobInfo> RegionPartitionTopology(Mat ImgBinary)
 			if (vhi[i].val[2] == -1)
 			{
 				//----沒有子階層
-				PlayNitrideAOI::BlobInfo obj = PlayNitrideAOI::BlobInfo(vContour[i]);
+				BlobInfo obj = BlobInfo(vContour[i]);
 				vRes.push_back(obj);
 			}
 			else
@@ -764,7 +764,7 @@ vector<tuple<Point, float>> MatchPattern(Mat Img, Mat MatchPattern, int div_x, i
 					dstBinary.at<uchar>(j, i) = 255;
 				}
 
-		vector<PlayNitrideAOI::BlobInfo> vRegionTmp = RegionPartitionTopology(dstBinary);
+		vector<BlobInfo> vRegionTmp = RegionPartitionTopology(dstBinary);
 
 		//-----刪除 Noise 
 		float sum_Area = 0;
@@ -773,7 +773,7 @@ vector<tuple<Point, float>> MatchPattern(Mat Img, Mat MatchPattern, int div_x, i
 			sum_Area += vRegionTmp[i].Area();
 
 		float avg_area = sum_Area / vRegionTmp.size();
-		vector<PlayNitrideAOI::BlobInfo> vRegion;
+		vector<BlobInfo> vRegion;
 
 		for (int i = 0; i < vRegionTmp.size(); i++)
 			if (vRegionTmp[i].Area() > 0.5 * avg_area)

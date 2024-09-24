@@ -53,8 +53,8 @@ typedef struct
 
 #pragma region Blob ¤Á³Î
 
-namespace PlayNitrideAOI
-{
+//namespace PlayNitrideAOI
+//{
 
     class BlobInfo;
 
@@ -230,4 +230,4 @@ namespace PlayNitrideAOI
 
 
     _declspec(dllexport) vector<tuple<Point, float>> MatchPattern(Mat Img, Mat MatchPattern, int div_x, int div_y, float Tolerance_score);
-}
+//}
