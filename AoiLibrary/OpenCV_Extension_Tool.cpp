@@ -706,9 +706,100 @@ vector<BlobInfo> RegionPartitionTopology(Mat ImgBinary)
 	return vRes;
 }
 
+void _GetRegionStatistics(vector<BlobInfo> vRegions, string Property, float& avg, float& std)
+{
+	if (vRegions.size() == 1)
+	{
+		if (Property == "Area")
+			avg = vRegions[0].Area();
+		else if (Property == "minRectWidth")
+			avg = vRegions[0].minRectWidth();
+		else if (Property == "minRectHeight")
+			avg = vRegions[0].minRectHeight();
+		else
+			avg = vRegions[0].Area();
+
+		std = 0;
+		return;
+	}
+	else if (vRegions.size() == 0)
+	{
+		avg = 0;
+		std = 0;
+		return;
+	}
+
+	float sum = 0;
+
+	for (int i = 0; i < vRegions.size(); i++)
+	{
+		if (Property == "Area")
+			sum += vRegions[i].Area();
+		else if (Property == "minRectWidth")
+			sum += vRegions[i].minRectWidth();
+		else if (Property == "minRectHeight")
+			sum += vRegions[i].minRectHeight();
+		else
+			sum += vRegions[i].Area();
+	}
+
+	avg = sum / vRegions.size();
+
+	float sigma = 0;
+
+	for (int i = 0; i < vRegions.size(); i++)
+	{
+		float element;// = vRegions[i].Area() - avg;
+
+		if (Property == "Area")
+			element = vRegions[i].Area() - avg;
+		else if (Property == "minRectWidth")
+			element = vRegions[i].minRectWidth() - avg;
+		else if (Property == "minRectHeight")
+			element = vRegions[i].minRectHeight() - avg;
+		else
+			element = vRegions[i].Area() - avg;
+
+		sigma += element * element;
+	}
+	sigma /= vRegions.size();
+	std = sqrt(sigma);
+}
 
 
-vector<tuple<Point, float>> MatchPattern(Mat Img, Mat MatchPattern, int div_x, int div_y, float Tolerance_score)
+
+vector<BlobInfo> FilteredRegionByStatistics(vector<BlobInfo> vRegions)
+{
+	float avg_A; float std_A;
+	_GetRegionStatistics(vRegions, "Area", avg_A, std_A);
+	float avg_mW; float std_mW;
+	_GetRegionStatistics(vRegions, "minRectWidth", avg_mW, std_mW);
+	float avg_mH; float std_mH;
+	_GetRegionStatistics(vRegions, "minRectHeight", avg_mH, std_mH);
+
+	vector<BlobInfo> vRegionsNew;
+
+	for (int i = 0; i < vRegions.size(); i++)
+	{
+		float value = 0;
+
+		if (vRegions[i].Area() > avg_A + std_A || vRegions[i].Area() < avg_A - std_A)
+			continue;
+
+		if (vRegions[i].minRectWidth() > avg_mW + std_mW || vRegions[i].minRectWidth() < avg_mW - std_mW)
+			continue;
+
+		if (vRegions[i].minRectHeight() > avg_mH + std_mH || vRegions[i].minRectHeight() < avg_mH - std_mH)
+			continue;
+
+		vRegionsNew.push_back(vRegions[i]);
+
+	}
+	return vRegionsNew;
+}
+
+
+vector<tuple<Point, float>> MatchPattern(Mat Img, Mat Pattern, int div_x = 1, int div_y = 1, float Tolerance_score = 0.5)
 {
 	int xPatternGrid = div_x;
 	int yPatternGrid = div_y;
@@ -724,8 +815,8 @@ vector<tuple<Point, float>> MatchPattern(Mat Img, Mat MatchPattern, int div_x, i
 	vector<Mat> vCropMatch;
 	vector<Point> vCropCenter;
 
-	int subWidth = MatchPattern.size().width / xPatternGrid;
-	int subHeight = MatchPattern.size().height / yPatternGrid;
+	int subWidth = Pattern.size().width / xPatternGrid;
+	int subHeight = Pattern.size().height / yPatternGrid;
 
 	for (int x = 0; x < xPatternGrid; x++)
 		for (int y = 0; y < yPatternGrid; y++)
@@ -735,7 +826,7 @@ vector<tuple<Point, float>> MatchPattern(Mat Img, Mat MatchPattern, int div_x, i
 
 			vCropIndx.push_back(Point(x, y));
 			vCropCenter.push_back(Point((x + 0.5) * subWidth, (y + 0.5) * subHeight));
-			MatchPattern(rectPart).copyTo(croppedIMG);
+			Pattern(rectPart).copyTo(croppedIMG);
 			vCropMatch.push_back(croppedIMG);
 		}
 
@@ -765,29 +856,29 @@ vector<tuple<Point, float>> MatchPattern(Mat Img, Mat MatchPattern, int div_x, i
 				}
 
 		vector<BlobInfo> vRegionTmp = RegionPartitionTopology(dstBinary);
-
-		//-----刪除 Noise 
-		float sum_Area = 0;
-
-		for (int i = 0; i < vRegionTmp.size(); i++)
-			sum_Area += vRegionTmp[i].Area();
-
-		float avg_area = sum_Area / vRegionTmp.size();
 		vector<BlobInfo> vRegion;
 
-		for (int i = 0; i < vRegionTmp.size(); i++)
-			if (vRegionTmp[i].Area() > 0.5 * avg_area)
-				vRegion.push_back(vRegionTmp[i]);
+
+		if (vRegionTmp.size() > 0)
+		{
+			float avg_Area = 0, std_Area = 0;
+
+			//-----刪除 Noise 
+			vRegion = FilteredRegionByStatistics(vRegionTmp);
+		}
+		else
+		{
+			vRegion.push_back(vRegionTmp[0]);
+		}
+
 
 
 		Point offset = Point(vCropMatch[i].size().width / 2 - 1, vCropMatch[i].size().height / 2 - 1);
-		//Mat tmpImg = Img.clone();
 
 		for (int j = 0; j < vRegion.size(); j++)
 		{
 			Point pt = Point(vRegion[j].Center()) + offset;
-			//result[i].insert(result[i].begin(), pt);
-			//drawMarker(tmpImg, pt, Scalar(255, 0, 0), 1, 50, 3);
+			result[i].insert(result[i].begin(), pt);
 		}
 
 		dst.release();
@@ -840,6 +931,8 @@ vector<tuple<Point, float>> MatchPattern(Mat Img, Mat MatchPattern, int div_x, i
 						return false;
 					});
 
+				int idx = 0;
+
 				//判斷是否合理
 				Point pointDist = result[s][0] - ref_Pt;
 				float dist = norm(pointDist);
@@ -849,7 +942,17 @@ vector<tuple<Point, float>> MatchPattern(Mat Img, Mat MatchPattern, int div_x, i
 					break;
 				}
 
+				//-----計算向量
+
+				float arcCos = (ptDiff.x * pointDist.x + ptDiff.y * pointDist.y) / (1.0 * (norm(ptDiff) * norm(pointDist)));
+				float angle = acos(arcCos) * 180.0 / CV_PI;
+
+				//std::cout << "arcCos:: " << arcCos << endl;
+				//std::cout << "angle:: " << angle << endl;
+
 				//------待加入其他糾錯條件
+				//------目前條件過於單薄 穩定性不足
+
 				vSet.push_back(result[s][0]);//參考基準點一
 				result[s].erase(result[s].begin());
 			}
@@ -878,6 +981,40 @@ vector<tuple<Point, float>> MatchPattern(Mat Img, Mat MatchPattern, int div_x, i
 
 	vCropMatch.clear();
 
-	return vMatchResult;
+	Img.release();
+	Pattern.release();
 
+	return vMatchResult;
+}
+
+vector<tuple<Point, float>> MatchPattern(Mat Img, Mat Pattern, float Tolerance_score)
+{
+	int div_x = 1;
+	int div_y = 1;
+
+	float ratio = 1;
+
+	if (Pattern.cols > Pattern.rows)
+		ratio = Pattern.cols * 1.0 / Pattern.rows * 1.0;
+	else
+		ratio = Pattern.rows * 1.0 / Pattern.cols * 1.0;
+
+	ratio = round(ratio);
+
+	if (ratio >= 2)
+	{
+		if (Pattern.cols > Pattern.rows)
+		{
+			div_x = (int)ratio;
+			div_y = 1;
+		}
+		else
+		{
+			div_x = 1;
+			div_y = (int)ratio;
+		}
+
+	}
+
+	return MatchPattern(Img, Pattern, div_x, div_y, Tolerance_score);
 }
