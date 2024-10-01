@@ -772,10 +772,10 @@ vector<BlobInfo> FilteredRegionByStatistics(vector<BlobInfo> vRegions)
 {
 	float avg_A; float std_A;
 	_GetRegionStatistics(vRegions, "Area", avg_A, std_A);
-	float avg_mW; float std_mW;
-	_GetRegionStatistics(vRegions, "minRectWidth", avg_mW, std_mW);
-	float avg_mH; float std_mH;
-	_GetRegionStatistics(vRegions, "minRectHeight", avg_mH, std_mH);
+	//float avg_mW; float std_mW;
+	//_GetRegionStatistics(vRegions, "minRectWidth", avg_mW, std_mW);
+	//float avg_mH; float std_mH;
+	//_GetRegionStatistics(vRegions, "minRectHeight", avg_mH, std_mH);
 
 	vector<BlobInfo> vRegionsNew;
 
@@ -785,12 +785,19 @@ vector<BlobInfo> FilteredRegionByStatistics(vector<BlobInfo> vRegions)
 
 		if (vRegions[i].Area() > avg_A + std_A || vRegions[i].Area() < avg_A - std_A)
 			continue;
+		//}
 
-		if (vRegions[i].minRectWidth() > avg_mW + std_mW || vRegions[i].minRectWidth() < avg_mW - std_mW)
-			continue;
+		//if (vRegions[i].minRectWidth() > avg_mW + std_mW || vRegions[i].minRectWidth() < avg_mW - std_mW)
+		//{
+		//	std::cout << "minRectWidth:: " << vRegions[i].minRectWidth() << endl;
+		//	continue;
+		//}
 
-		if (vRegions[i].minRectHeight() > avg_mH + std_mH || vRegions[i].minRectHeight() < avg_mH - std_mH)
-			continue;
+		//if (vRegions[i].minRectHeight() > avg_mH + std_mH || vRegions[i].minRectHeight() < avg_mH - std_mH)
+		//{
+		//	std::cout << "minRectHeight:: " << vRegions[i].minRectHeight() << endl;
+		//	continue;
+		//}
 
 		vRegionsNew.push_back(vRegions[i]);
 
@@ -944,7 +951,7 @@ vector<tuple<Point, float>> MatchPattern(Mat Img, Mat Pattern, int div_x = 1, in
 
 				//-----計算向量
 
-				float arcCos = (ptDiff.x * pointDist.x + ptDiff.y * pointDist.y) / (1.0 * (norm(ptDiff) * norm(pointDist)));
+				float arcCos = (ptDiff.x* pointDist.x+ ptDiff.y * pointDist.y)/ (1.0*(norm(ptDiff) * norm(pointDist)));
 				float angle = acos(arcCos) * 180.0 / CV_PI;
 
 				//std::cout << "arcCos:: " << arcCos << endl;
@@ -952,12 +959,18 @@ vector<tuple<Point, float>> MatchPattern(Mat Img, Mat Pattern, int div_x = 1, in
 
 				//------待加入其他糾錯條件
 				//------目前條件過於單薄 穩定性不足
+				if (angle > 10 || angle < -10)
+				{
+					continue;
+				}
+
+
 
 				vSet.push_back(result[s][0]);//參考基準點一
 				result[s].erase(result[s].begin());
 			}
 
-			if (vSet.size() == result.size() && vSet.size() > 1)
+			if (vSet.size()== result.size() && vSet.size() > 1)
 			{
 				matchedComfirm.push_back(vSet);
 			}
@@ -987,23 +1000,23 @@ vector<tuple<Point, float>> MatchPattern(Mat Img, Mat Pattern, int div_x = 1, in
 	return vMatchResult;
 }
 
-vector<tuple<Point, float>> MatchPattern(Mat Img, Mat Pattern, float Tolerance_score)
+vector<tuple<Point, float>> MatchPattern(Mat Img, Mat MatchPatternImg, float Tolerance_score)
 {
 	int div_x = 1;
 	int div_y = 1;
 
-	float ratio = 1;
+	float ratio=1;
 
-	if (Pattern.cols > Pattern.rows)
-		ratio = Pattern.cols * 1.0 / Pattern.rows * 1.0;
+	if (MatchPatternImg.cols > MatchPatternImg.rows)
+		ratio = MatchPatternImg.cols*1.0 / MatchPatternImg.rows*1.0;
 	else
-		ratio = Pattern.rows * 1.0 / Pattern.cols * 1.0;
+		ratio = MatchPatternImg.rows*1.0 / MatchPatternImg.cols*1.0;
 
 	ratio = round(ratio);
 
 	if (ratio >= 2)
 	{
-		if (Pattern.cols > Pattern.rows)
+		if (MatchPatternImg.cols > MatchPatternImg.rows)
 		{
 			div_x = (int)ratio;
 			div_y = 1;
@@ -1016,5 +1029,12 @@ vector<tuple<Point, float>> MatchPattern(Mat Img, Mat Pattern, float Tolerance_s
 
 	}
 
-	return MatchPattern(Img, Pattern, div_x, div_y, Tolerance_score);
+	return MatchPattern(Img, MatchPatternImg, div_x, div_y, Tolerance_score);
 }
+
+
+//--------------------Match Object
+
+//MatchObject::MatchObject(Mat Pattern)
+//{
+//}
