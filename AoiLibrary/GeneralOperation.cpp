@@ -530,7 +530,7 @@ std::tuple<Mat, Mat, Mat>Histplotting(Mat src, int hist_w, int hist_h, int hists
 
 string LibVersion()
 {
-	return "1.0.0.3";
+	return "1.0.0.4";
 }
 
 void gammaCorrection(const Mat& src, Mat& dst, const float gamma)

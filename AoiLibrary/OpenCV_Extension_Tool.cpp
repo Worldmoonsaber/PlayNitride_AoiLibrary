@@ -706,11 +706,12 @@ vector<BlobInfo> RegionPartitionTopology(Mat ImgBinary)
 	return vRes;
 }
 
-void _GetRegionStatistics(vector<BlobInfo> vRegions, string Property, float& avg, float& std)
+
+void _GetRegionStatistics(vector<BlobInfo> vRegions,string Property, float& avg, float& std)
 {
 	if (vRegions.size() == 1)
 	{
-		if (Property == "Area")
+		if(Property=="Area")
 			avg = vRegions[0].Area();
 		else if (Property == "minRectWidth")
 			avg = vRegions[0].minRectWidth();
@@ -734,7 +735,7 @@ void _GetRegionStatistics(vector<BlobInfo> vRegions, string Property, float& avg
 	for (int i = 0; i < vRegions.size(); i++)
 	{
 		if (Property == "Area")
-			sum += vRegions[i].Area();
+			sum+= vRegions[i].Area();
 		else if (Property == "minRectWidth")
 			sum += vRegions[i].minRectWidth();
 		else if (Property == "minRectHeight")
@@ -767,15 +768,10 @@ void _GetRegionStatistics(vector<BlobInfo> vRegions, string Property, float& avg
 }
 
 
-
 vector<BlobInfo> FilteredRegionByStatistics(vector<BlobInfo> vRegions)
 {
 	float avg_A; float std_A;
 	_GetRegionStatistics(vRegions, "Area", avg_A, std_A);
-	//float avg_mW; float std_mW;
-	//_GetRegionStatistics(vRegions, "minRectWidth", avg_mW, std_mW);
-	//float avg_mH; float std_mH;
-	//_GetRegionStatistics(vRegions, "minRectHeight", avg_mH, std_mH);
 
 	vector<BlobInfo> vRegionsNew;
 
@@ -783,24 +779,13 @@ vector<BlobInfo> FilteredRegionByStatistics(vector<BlobInfo> vRegions)
 	{
 		float value = 0;
 
-		if (vRegions[i].Area() > avg_A + std_A || vRegions[i].Area() < avg_A - std_A)
+		if (vRegions[i].Area() > avg_A * 2 || vRegions[i].Area() < avg_A * 0.5)
+		{
 			continue;
-		//}
-
-		//if (vRegions[i].minRectWidth() > avg_mW + std_mW || vRegions[i].minRectWidth() < avg_mW - std_mW)
-		//{
-		//	std::cout << "minRectWidth:: " << vRegions[i].minRectWidth() << endl;
-		//	continue;
-		//}
-
-		//if (vRegions[i].minRectHeight() > avg_mH + std_mH || vRegions[i].minRectHeight() < avg_mH - std_mH)
-		//{
-		//	std::cout << "minRectHeight:: " << vRegions[i].minRectHeight() << endl;
-		//	continue;
-		//}
+		}
 
 		vRegionsNew.push_back(vRegions[i]);
-
+	
 	}
 	return vRegionsNew;
 }
@@ -954,8 +939,6 @@ vector<tuple<Point, float>> MatchPattern(Mat Img, Mat Pattern, int div_x = 1, in
 				float arcCos = (ptDiff.x* pointDist.x+ ptDiff.y * pointDist.y)/ (1.0*(norm(ptDiff) * norm(pointDist)));
 				float angle = acos(arcCos) * 180.0 / CV_PI;
 
-				//std::cout << "arcCos:: " << arcCos << endl;
-				//std::cout << "angle:: " << angle << endl;
 
 				//------待加入其他糾錯條件
 				//------目前條件過於單薄 穩定性不足
