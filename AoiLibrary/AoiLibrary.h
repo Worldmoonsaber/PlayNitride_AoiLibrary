@@ -53,14 +53,10 @@ typedef struct
 
 #pragma region Blob 切割
 
-//namespace PlayNitrideAOI
-//{
-
     class BlobInfo;
 
     _declspec(dllexport) vector<BlobInfo> RegionPartitionTopology(Mat ImgBinary);
 
-    _declspec(dllexport) vector<BlobInfo> RegionPartition(Mat ImgBinary, int maxArea, int minArea);
 
 #pragma endregion
 
@@ -99,10 +95,7 @@ typedef struct
 
     _declspec(dllexport) std::tuple<Mat, Mat, Mat>Histplotting(Mat src, int hist_w, int hist_h, int histsize);
 
-
     _declspec(dllexport) string LibVersion();
-
-
 
 #pragma region 一定要放在這裡 呼叫dll時才不會出錯 還在研究有沒有比較好的方法
 
@@ -229,7 +222,6 @@ typedef struct
 #pragma endregion
 
 
-    /// <summary>/// 
 /// </summary>
 /// <param name="Img">目標影像</param>
 /// <param name="MatchPattern">比對 Pattern</param>

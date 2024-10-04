@@ -153,7 +153,6 @@ typedef struct
         /// </summary>
         /// <returns></returns>
         _declspec(dllexport) float Rb();
-
         _declspec(dllexport) int Xmin();
         _declspec(dllexport) int Ymin();
         _declspec(dllexport) int Xmax();
@@ -179,7 +178,6 @@ typedef struct
         _declspec(dllexport) float Roundness();
 
         _declspec(dllexport) float Sides();
-
 
         /// <summary>
         /// Topology 才有用的屬性

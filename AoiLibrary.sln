@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AoiLibrary", "AoiLibrary\Ao
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConsoleCallDllTestApplication", "ConsoleCallDllTestApplication\ConsoleCallDllTestApplication.vcxproj", "{68A4DFED-4DE0-40C3-A306-370EBD6F4E2F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AOILib_MTUkey_V1", "AOILib_MTUkey_V1\AOILib_MTUkey_V1.vcxproj", "{D71F429D-8ED6-4C10-A3C0-70895DADFC95}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{68A4DFED-4DE0-40C3-A306-370EBD6F4E2F}.Release|x64.Build.0 = Release|x64
 		{68A4DFED-4DE0-40C3-A306-370EBD6F4E2F}.Release|x86.ActiveCfg = Release|Win32
 		{68A4DFED-4DE0-40C3-A306-370EBD6F4E2F}.Release|x86.Build.0 = Release|Win32
+		{D71F429D-8ED6-4C10-A3C0-70895DADFC95}.Debug|x64.ActiveCfg = Debug|x64
+		{D71F429D-8ED6-4C10-A3C0-70895DADFC95}.Debug|x64.Build.0 = Debug|x64
+		{D71F429D-8ED6-4C10-A3C0-70895DADFC95}.Debug|x86.ActiveCfg = Debug|Win32
+		{D71F429D-8ED6-4C10-A3C0-70895DADFC95}.Debug|x86.Build.0 = Debug|Win32
+		{D71F429D-8ED6-4C10-A3C0-70895DADFC95}.Release|x64.ActiveCfg = Release|x64
+		{D71F429D-8ED6-4C10-A3C0-70895DADFC95}.Release|x64.Build.0 = Release|x64
+		{D71F429D-8ED6-4C10-A3C0-70895DADFC95}.Release|x86.ActiveCfg = Release|Win32
+		{D71F429D-8ED6-4C10-A3C0-70895DADFC95}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
