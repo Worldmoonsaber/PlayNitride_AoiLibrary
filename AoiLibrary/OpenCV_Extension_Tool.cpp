@@ -632,7 +632,9 @@ void RegionPartitionTopologySubLayerAnalysis(int layer,int curIndex, vector<vect
 		}
 
 		BlobInfo blob = BlobInfo(mainContour, vHollowContour);
-		lstBlob.push_back(blob);
+
+		if(blob.Area()>0)
+			lstBlob.push_back(blob);
 
 		for (int i = 0; i < subIndx.size(); i++)
 			RegionPartitionTopologySubLayerAnalysis(layer + 1, subIndx[i], vContour, vhi, lstBlob);
@@ -666,6 +668,13 @@ void RegionPartitionTopologySubLayerAnalysis(int layer,int curIndex, vector<vect
 
 vector<BlobInfo> RegionPartitionTopology(Mat ImgBinary)
 {
+
+	if (ImgBinary.channels() != 1)
+	{
+		throw "RegionPartitionTopology(Mat ImgBinary) Only Accept type CV_8UC1 Image";
+	}
+
+
 	vector<BlobInfo> vRes;
 	//https://blog.csdn.net/qinglingLS/article/details/106270095
 	// 準備用拓樸的方式重構方法
@@ -706,318 +715,36 @@ vector<BlobInfo> RegionPartitionTopology(Mat ImgBinary)
 	return vRes;
 }
 
-
-void _GetRegionStatistics(vector<BlobInfo> vRegions,string Property, float& avg, float& std)
+vector<BlobInfo> FindSpecificRegionsBySizeTD(Mat ImgBinary, sizeTD szTD)
 {
-	if (vRegions.size() == 1)
+	vector<BlobInfo> vRegion;
+
+	vRegion = RegionPartitionTopology(ImgBinary);
+
+	vector<BlobInfo> results;
+
+	for (int i = 0; i < vRegion.size(); i++)
 	{
-		if(Property=="Area")
-			avg = vRegions[0].Area();
-		else if (Property == "minRectWidth")
-			avg = vRegions[0].minRectWidth();
-		else if (Property == "minRectHeight")
-			avg = vRegions[0].minRectHeight();
-		else
-			avg = vRegions[0].Area();
-
-		std = 0;
-		return;
-	}
-	else if (vRegions.size() == 0)
-	{
-		avg = 0;
-		std = 0;
-		return;
-	}
-
-	float sum = 0;
-
-	for (int i = 0; i < vRegions.size(); i++)
-	{
-		if (Property == "Area")
-			sum+= vRegions[i].Area();
-		else if (Property == "minRectWidth")
-			sum += vRegions[i].minRectWidth();
-		else if (Property == "minRectHeight")
-			sum += vRegions[i].minRectHeight();
-		else
-			sum += vRegions[i].Area();
-	}
-
-	avg = sum / vRegions.size();
-
-	float sigma = 0;
-
-	for (int i = 0; i < vRegions.size(); i++)
-	{
-		float element;// = vRegions[i].Area() - avg;
-
-		if (Property == "Area")
-			element = vRegions[i].Area() - avg;
-		else if (Property == "minRectWidth")
-			element = vRegions[i].minRectWidth() - avg;
-		else if (Property == "minRectHeight")
-			element = vRegions[i].minRectHeight() - avg;
-		else
-			element = vRegions[i].Area() - avg;
-
-		sigma += element * element;
-	}
-	sigma /= vRegions.size();
-	std = sqrt(sigma);
-}
-
-
-vector<BlobInfo> FilteredRegionByStatistics(vector<BlobInfo> vRegions)
-{
-	float avg_A; float std_A;
-	_GetRegionStatistics(vRegions, "Area", avg_A, std_A);
-
-	vector<BlobInfo> vRegionsNew;
-
-	for (int i = 0; i < vRegions.size(); i++)
-	{
-		float value = 0;
-
-		if (vRegions[i].Area() > avg_A * 2 || vRegions[i].Area() < avg_A * 0.5)
-		{
+		if (vRegion[i].Width() > szTD.TDwidth * szTD.TDmaxW || vRegion[i].Width() < szTD.TDwidth * szTD.TDminW)
 			continue;
-		}
 
-		vRegionsNew.push_back(vRegions[i]);
-	
+		if (vRegion[i].Height() > szTD.TDheight * szTD.TDmaxH || vRegion[i].Height() < szTD.TDheight * szTD.TDminH)
+			continue;
+
+		results.push_back(vRegion[i]);
 	}
-	return vRegionsNew;
+
+	return results;
 }
 
 
-vector<tuple<Point, float>> MatchPattern(Mat Img, Mat Pattern, int div_x = 1, int div_y = 1, float Tolerance_score = 0.5)
-{
-	int xPatternGrid = div_x;
-	int yPatternGrid = div_y;
-	float tolerance_Score = Tolerance_score;
-
-	if (xPatternGrid == 0)
-		xPatternGrid = 1;
-
-	if (yPatternGrid == 0)
-		yPatternGrid = 1;
-
-	vector<Point> vCropIndx;
-	vector<Mat> vCropMatch;
-	vector<Point> vCropCenter;
-
-	int subWidth = Pattern.size().width / xPatternGrid;
-	int subHeight = Pattern.size().height / yPatternGrid;
-
-	for (int x = 0; x < xPatternGrid; x++)
-		for (int y = 0; y < yPatternGrid; y++)
-		{
-			Mat croppedIMG;
-			Rect rectPart = Rect(x * subWidth, y * subHeight, subWidth, subHeight);
-
-			vCropIndx.push_back(Point(x, y));
-			vCropCenter.push_back(Point((x + 0.5) * subWidth, (y + 0.5) * subHeight));
-			Pattern(rectPart).copyTo(croppedIMG);
-			vCropMatch.push_back(croppedIMG);
-		}
-
-	const int resSz = xPatternGrid * yPatternGrid;
-
-	vector < vector<Point>> result;
-
-	for (int i = 0; i < resSz; i++)
-		result.push_back(vector<Point>());
-
-	for (int i = 0; i < resSz; i++)
-	{
-		Mat imgMatched;
-		matchTemplate(Img, vCropMatch[i], imgMatched, TM_CCOEFF_NORMED);
-
-		Mat dst;
-		threshold(imgMatched, dst, tolerance_Score, 1, THRESH_BINARY);
-
-		Mat dstBinary = Mat::zeros(dst.size(), CV_8UC1);
-
-		//-----------------預期會有多點符合條件
-		for (int i = 0; i < dst.cols; ++i)
-			for (int j = 0; j < dst.rows; ++j)
-				if (dst.at<float>(j, i) != 0)
-				{
-					dstBinary.at<uchar>(j, i) = 255;
-				}
-
-		vector<BlobInfo> vRegionTmp = RegionPartitionTopology(dstBinary);
-		vector<BlobInfo> vRegion;
 
 
-		if (vRegionTmp.size() > 0)
-		{
-			float avg_Area = 0, std_Area = 0;
-
-			//-----刪除 Noise 
-			vRegion = FilteredRegionByStatistics(vRegionTmp);
-		}
-		else
-		{
-			vRegion.push_back(vRegionTmp[0]);
-		}
-
-
-
-		Point offset = Point(vCropMatch[i].size().width / 2 - 1, vCropMatch[i].size().height / 2 - 1);
-
-		for (int j = 0; j < vRegion.size(); j++)
-		{
-			Point pt = Point(vRegion[j].Center()) + offset;
-			result[i].insert(result[i].begin(), pt);
-		}
-
-		dst.release();
-		imgMatched.release();
-		dstBinary.release();
-	}
-
-	vector<tuple<Point, float>> vMatchResult;
-
-	if (result.size() == 1)
-	{
-		//----只有一個Template 無法計算角度
-		for (int i = 0; i < result[0].size(); i++)
-		{
-			vMatchResult.push_back(tuple<Point, float>(result[0][i], 0.0));
-		}
-	}
-	else
-	{
-		vector<vector<Point>> matchedComfirm;
-		//----一一比對
-		for (int i = 0; i < result[0].size(); i++)
-		{
-			vector<Point> vSet;
-			vSet.push_back(result[0][i]);//參考基準點一
-
-			Point ref_Pt = result[0][i];
-
-			for (int s = 1; s < result.size(); s++)
-			{
-				if (result[s].size() == 0)
-					break;
-
-				float x_diff_ref = vCropCenter[s].x - vCropCenter[0].x;
-				float y_diff_ref = vCropCenter[s].y - vCropCenter[0].y;
-
-				Point ptDiff = Point(x_diff_ref, y_diff_ref);
-
-				float ptDiffDist = norm(ptDiff);
-
-				std::sort(result[s].begin(), result[s].end(), [&, ref_Pt, x_diff_ref, y_diff_ref](Point& a, Point& b)
-					{
-						Point pointDist_A = a - ref_Pt;
-						Point pointDist_B = b - ref_Pt;
-
-						if (norm(pointDist_A) < norm(pointDist_B))
-						{
-							return true;
-						}
-						return false;
-					});
-
-				int idx = 0;
-
-				//判斷是否合理
-				Point pointDist = result[s][0] - ref_Pt;
-				float dist = norm(pointDist);
-
-				if (ptDiffDist * 1.1 < dist)
-				{
-					break;
-				}
-
-				//-----計算向量
-
-				float arcCos = (ptDiff.x* pointDist.x+ ptDiff.y * pointDist.y)/ (1.0*(norm(ptDiff) * norm(pointDist)));
-				float angle = acos(arcCos) * 180.0 / CV_PI;
-
-
-				//------待加入其他糾錯條件
-				//------目前條件過於單薄 穩定性不足
-				if (angle > 10 || angle < -10)
-				{
-					continue;
-				}
-
-
-
-				vSet.push_back(result[s][0]);//參考基準點一
-				result[s].erase(result[s].begin());
-			}
-
-			if (vSet.size()== result.size() && vSet.size() > 1)
-			{
-				matchedComfirm.push_back(vSet);
-			}
-		}
-
-		for (int i = 0; i < matchedComfirm.size(); i++)
-		{
-			if (matchedComfirm[i].size() == 0)
-				continue;
-
-			RotatedRect minrect = minAreaRect(matchedComfirm[i]);
-			vMatchResult.push_back(tuple<Point, float>(minrect.center, minrect.angle));
-		}
-	}
-
-	vCropIndx.clear();
-	vCropCenter.clear();
-
-	for (int i = 0; i < vCropMatch.size(); i++)
-		vCropMatch[i].release();
-
-	vCropMatch.clear();
-
-	Img.release();
-	Pattern.release();
-
-	return vMatchResult;
-}
-
-vector<tuple<Point, float>> MatchPattern(Mat Img, Mat MatchPatternImg, float Tolerance_score)
-{
-	int div_x = 1;
-	int div_y = 1;
-
-	float ratio=1;
-
-	if (MatchPatternImg.cols > MatchPatternImg.rows)
-		ratio = MatchPatternImg.cols*1.0 / MatchPatternImg.rows*1.0;
-	else
-		ratio = MatchPatternImg.rows*1.0 / MatchPatternImg.cols*1.0;
-
-	ratio = round(ratio);
-
-	if (ratio >= 2)
-	{
-		if (MatchPatternImg.cols > MatchPatternImg.rows)
-		{
-			div_x = (int)ratio;
-			div_y = 1;
-		}
-		else
-		{
-			div_x = 1;
-			div_y = (int)ratio;
-		}
-
-	}
-
-	return MatchPattern(Img, MatchPatternImg, div_x, div_y, Tolerance_score);
-}
-
-
-//--------------------Match Object
-
-//MatchObject::MatchObject(Mat Pattern)
-//{
-//}
+//Point2f pt0[4] = { Point2f(0,0),Point2f(imgPattern.cols,0) ,Point2f(imgPattern.cols,imgPattern.rows),Point2f(0,imgPattern.rows) };
+//Point2f pt1[4] = { Point2f(3801,1187) ,Point2f(3836,1185) ,Point2f(3838,1232) ,Point2f(3803,1233) };
+//
+//
+//Mat trans = getPerspectiveTransform(pt0, pt1, DECOMP_LU);
+//
+//Mat result = Mat(img.size(), img.type());
+//warpPerspective(imgPattern, result, trans, img.size());

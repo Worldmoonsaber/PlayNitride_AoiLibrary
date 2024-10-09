@@ -6,83 +6,66 @@
 #include <opencv2/imgproc.hpp>
 #include <iostream>
 #include "AoiLibrary.h"
-//#include "../AoiLibrary/AoiLibrary.h"
 
 using namespace cv;
 using namespace std;
 
+
+vector<BlobInfo> FindSpecificRegionsBySizeTD(Mat ImgBinary, sizeTD szTD)
+{
+    vector<BlobInfo> vRegion;
+
+    vRegion = RegionPartitionTopology(ImgBinary);
+
+    vector<BlobInfo> results;
+
+    for (int i = 0; i < vRegion.size(); i++)
+    {
+        if (vRegion[i].Width() > szTD.TDwidth * szTD.TDmaxW || vRegion[i].Width() < szTD.TDwidth * szTD.TDminW)
+            continue;
+
+        if (vRegion[i].Height() > szTD.TDheight * szTD.TDmaxH || vRegion[i].Height() < szTD.TDheight * szTD.TDminH)
+            continue;
+
+        results.push_back(vRegion[i]);
+    }
+
+    return results;
+}
+
+
+
+
 int main()
 {
-    /*
-    std:: cout << "Hello World!\n";
-    Mat ttt;
 
-    Mat rawimg = imread("C:\\Image\\Pair Chip\\20240830 PN177 chips image\\3_I140.bmp");
-
-    Mat Gimg;
-    Mat ImgThres;
-
-
-    thresP thresParm;
-    ImgP imageParm;
-    sizeTD target;
-
-    imageParm.cols = 1500; //800 ;900-1600
-    imageParm.rows = 1500;
-    imageParm.Outputmode = 0; //0:center coord ; 1: multiple mode
-    imageParm.PICmode = 0;
-
-
-    target.TDwidth = 150;
-    target.TDmaxW = 1.5;
-    target.TDminW = 0.8;
-
-    target.TDheight = 270;
-    target.TDmaxH = 1.5;
-    target.TDminH = 0.7;
-
-    thresParm = { 3,{208,99999,99999},{99999,99999,99999} ,{9,99999,99999}, {99999,99999,99999} };
-    thresParm.thresmode = 5;
-    thresParm.fgmax[0] = 1;
-    thresParm.bgmax[0] = 101;
-
-
-    funcThreshold(rawimg,ImgThres,thresParm,imageParm,target);
-    vector<BlobInfo> result = RegionPartitionTopology(ImgThres);
-
-    Point2f pt=result[0].Center();
-    */
     std::cout << "LibVersion="<< LibVersion() << endl;
 
-    Mat img = imread("C:\\Image\\Pair Chip\\20240830 PN177 chips image\\5_I140.bmp");
-    Mat imgPattern = imread("C:\\Image\\Pair Chip\\20240830 PN177 chips image\\PN177_I50_CHIP.bmp");
 
-    int xPatternGrid = 1;
-    int yPatternGrid = 1;
-    float tolerance_Score = 0.5;
+    Mat imgKey = imread("C:\\Users\\Playuser\\Downloads\\20240930_154751.bmp");
 
+    cvtColor(imgKey, imgKey, COLOR_RGB2GRAY);
+    Mat thres;
+    threshold(imgKey, thres, 200, 255, THRESH_BINARY_INV);
 
-    vector<tuple<Point, float>> vMatchResult = MatchPattern(img, imgPattern, xPatternGrid, yPatternGrid, tolerance_Score);
+    sizeTD szTD;
 
+    szTD.TDheight = 250;
+    szTD.TDwidth = 270;
+    szTD.TDmaxH = 1.5;
+    szTD.TDminH = 0.7;
+    szTD.TDmaxW = 1.5;
+    szTD.TDminW = 0.7;
 
-    for (int j = 0; j < vMatchResult.size(); j++)
-    {
-        Point pt = std::get<0>(vMatchResult[j]);
-        float angle = std::get<1>(vMatchResult[j]);
+    
 
-        RotatedRect rectNew;
-        rectNew.angle = angle;
-        rectNew.center = pt;
-        rectNew.size = imgPattern.size();
-        Point2f vertices2f[4];
-        rectNew.points(vertices2f);
+    vector<BlobInfo> results = FindSpecificRegionsBySizeTD(thres, szTD);
+        
 
-        for (int i = 0; i < 4; i++)
-            line(img, vertices2f[i], vertices2f[(i + 1) % 4], cv::Scalar(0, 255, 0), 3);
+    std::cout << "results.cOUNT :"<< results.size() << endl;
 
-        drawMarker(img, rectNew.center, Scalar(255, 0, 0), 15, 50, 10);
+    Mat imgEmpty = Mat(thres.size(), CV_8UC1);
 
-    }
 
     system("PAUSE");
     return 0;

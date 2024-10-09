@@ -7,6 +7,8 @@
 using namespace std;
 using namespace cv;
 #pragma comment(lib,"AOILib_Common.lib") 
+//版本修改時 請務必修改,方便dll呼叫時識別
+_declspec(dllexport) string LibVersion();
 
 #pragma region 資料結構
 
@@ -55,12 +57,16 @@ typedef struct
 
 #pragma region Blob 切割
 
-//namespace PlayNitrideAOI
-//{
-
     class BlobInfo;
 
+    /// <summary>
+    ///  影像區域切割並提取特徵
+    /// </summary>
+    /// <param name="ImgBinary">必須為 CV_8UC1格式</param>
+    /// <returns></returns>
     _declspec(dllexport) vector<BlobInfo> RegionPartitionTopology(Mat ImgBinary);
+
+    _declspec(dllexport) vector<BlobInfo> FindSpecificRegionsBySizeTD(Mat ImgBinary, sizeTD szTD);
 
 
 #pragma endregion
@@ -99,11 +105,6 @@ typedef struct
     _declspec(dllexport) std::tuple<int, Point_<int>> FindMF_pixel(Mat histImg);
 
     _declspec(dllexport) std::tuple<Mat, Mat, Mat>Histplotting(Mat src, int hist_w, int hist_h, int histsize);
-
-
-    _declspec(dllexport) string LibVersion();
-
-
 
 #pragma region 一定要放在這裡 呼叫dll時才不會出錯 還在研究有沒有比較好的方法
 
@@ -190,22 +191,39 @@ typedef struct
         /// </summary>
         /// <returns></returns>
         _declspec(dllexport) vector<Point> contourMain();
+
+    private:
+
+        int _area = -1;
+        float _circularity = -1;
+        float _rectangularity = -1;
+
+        Point2f _center;
+
+        vector<Point> _points{};
+        vector<Point> _contour{};
+
+        int _XminBound = -1;
+        int _YminBound = -1;
+        int _XmaxBound = -1;
+        int _YmaxBound = -1;
+        float _minRectWidth = -1;
+        float _minRectHeight = -1;
+        float _Angle = -1;
+        float _AspectRatio = -1;
+        float _Ra = -1;
+        float _Rb = -1;
+        float _bulkiness = -1;
+        float _compactness = -1;
+        float _roundness = -1;
+        float _sides = -1;
+        float _Width = -1;
+        float _Height = -1;
+
+        vector<Point> _contourMain{};
+        vector<vector<Point>> _contourHollow{};
+
     };
 
 
 #pragma endregion
-
-
-    /// <summary>/// 
-/// </summary>
-/// <param name="Img">目標影像</param>
-/// <param name="MatchPattern">比對 Pattern</param>
-/// <param name="div_x">MatchPattern 在 X方向切割數量 如果MatchPattern WIDTH大於HEIGHT 則建議可以調整為大於1 </param>
-/// <param name="div_y">MatchPattern 在 Y方向切割數量 如果MatchPattern HEIGHT大於WIDTH 則建議可以調整為大於1</param>
-/// <param name="Tolerance_score">容許分數 建議值0.5 </param>
-/// <returns> 輸出 vector<tuple<(位置,旋轉角度)>></returns>
-    _declspec(dllexport) vector <tuple<Point, float>> MatchPattern(Mat Img, Mat Pattern, int div_x, int div_y, float Tolerance_score);
-
-
-
-    _declspec(dllexport) vector <tuple<Point, float>> MatchPattern(Mat Img, Mat Pattern, float Tolerance_score);
